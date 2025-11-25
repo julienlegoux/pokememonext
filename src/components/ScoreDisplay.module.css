@@ -1,0 +1,57 @@
+.container {
+  font-family: 'Courier New', monospace;
+  border: 2px solid var(--border-color);
+  background: var(--panel-bg);
+  padding: 1rem;
+  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.3);
+}
+
+.header,
+.footer {
+  text-align: center;
+  color: var(--primary-color);
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.footer {
+  margin-top: 0.5rem;
+  margin-bottom: 0;
+}
+
+.scores {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.player {
+  padding: 0.5rem;
+  border: 1px solid var(--border-color);
+  background: var(--card-bg);
+  transition: all 0.3s;
+}
+
+.player.active {
+  border-color: var(--primary-color);
+  background: var(--active-bg);
+  box-shadow: 0 0 10px var(--primary-color);
+}
+
+.playerName {
+  font-weight: bold;
+  color: var(--text-color);
+  margin-bottom: 0.25rem;
+}
+
+.playerScore {
+  font-size: 1.5rem;
+  color: var(--primary-color);
+  font-weight: bold;
+}
+
+.playerStats {
+  font-size: 0.75rem;
+  color: var(--secondary-text);
+  margin-top: 0.25rem;
+}

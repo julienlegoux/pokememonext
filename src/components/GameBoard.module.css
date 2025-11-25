@@ -1,0 +1,17 @@
+.board {
+  display: grid;
+  gap: 1rem;
+  padding: 1rem;
+  border: 3px double var(--border-color);
+  background: var(--board-bg);
+  max-width: 800px;
+  margin: 0 auto;
+  box-shadow: 0 0 20px rgba(0, 255, 0, 0.2);
+}
+
+@media (max-width: 768px) {
+  .board {
+    gap: 0.5rem;
+    padding: 0.5rem;
+  }
+}

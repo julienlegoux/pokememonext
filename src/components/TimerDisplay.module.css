@@ -1,0 +1,39 @@
+.container {
+  font-family: 'Courier New', monospace;
+  border: 2px solid var(--border-color);
+  background: var(--panel-bg);
+  padding: 0.75rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.3);
+}
+
+.label {
+  color: var(--secondary-text);
+  font-size: 0.875rem;
+}
+
+.time {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--primary-color);
+}
+
+.container.warning {
+  border-color: var(--error-color);
+  animation: pulse 1s infinite;
+}
+
+.container.warning .time {
+  color: var(--error-color);
+}
+
+@keyframes pulse {
+  0%, 100% {
+    box-shadow: 0 0 5px var(--error-color);
+  }
+  50% {
+    box-shadow: 0 0 15px var(--error-color);
+  }
+}

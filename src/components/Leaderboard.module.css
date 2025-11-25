@@ -1,0 +1,165 @@
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.modalContent {
+  background: var(--panel-bg);
+  border: 3px double var(--border-color);
+  padding: 2rem;
+  max-width: 700px;
+  width: 100%;
+  font-family: 'Courier New', monospace;
+  box-shadow: 0 0 30px rgba(0, 255, 0, 0.3);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modalHeader h2 {
+  color: var(--primary-color);
+  text-align: center;
+  margin: 0 0 1.5rem 0;
+  font-size: 1.25rem;
+}
+
+.modalFooter {
+  text-align: center;
+  color: var(--primary-color);
+  margin-top: 1.5rem;
+}
+
+.difficultyTabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.tab {
+  flex: 1;
+  padding: 0.5rem;
+  background: var(--card-bg);
+  border: 2px solid var(--border-color);
+  color: var(--text-color);
+  font-family: 'Courier New', monospace;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tab:hover {
+  border-color: var(--primary-color);
+}
+
+.tab.active {
+  background: var(--active-bg);
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
+.table {
+  border: 2px solid var(--border-color);
+  margin-bottom: 1rem;
+}
+
+.tableHeader,
+.tableRow {
+  display: grid;
+  grid-template-columns: 50px 1fr 80px 80px 100px;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  align-items: center;
+}
+
+.tableHeader {
+  background: var(--active-bg);
+  border-bottom: 2px solid var(--border-color);
+  font-weight: bold;
+  color: var(--primary-color);
+}
+
+.tableRow {
+  border-bottom: 1px solid var(--border-color);
+  transition: background 0.2s;
+}
+
+.tableRow:last-child {
+  border-bottom: none;
+}
+
+.tableRow:hover {
+  background: var(--card-bg);
+}
+
+.rank,
+.score {
+  text-align: center;
+  font-weight: bold;
+}
+
+.name {
+  color: var(--text-color);
+}
+
+.score {
+  color: var(--primary-color);
+}
+
+.stats {
+  color: var(--secondary-text);
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+.date {
+  color: var(--secondary-text);
+  font-size: 0.875rem;
+  text-align: right;
+}
+
+.noEntries {
+  padding: 2rem;
+  text-align: center;
+  color: var(--secondary-text);
+}
+
+.actions {
+  display: flex;
+  justify-content: center;
+}
+
+.btnClose {
+  padding: 0.5rem 2rem;
+  background: var(--card-bg);
+  border: 2px solid var(--border-color);
+  color: var(--text-color);
+  font-family: 'Courier New', monospace;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btnClose:hover {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 5px var(--primary-color);
+}
+
+@media (max-width: 640px) {
+  .tableHeader,
+  .tableRow {
+    grid-template-columns: 40px 1fr 60px;
+    font-size: 0.875rem;
+  }
+
+  .stats,
+  .date {
+    display: none;
+  }
+}
