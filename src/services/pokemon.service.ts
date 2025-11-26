@@ -1,4 +1,5 @@
 import { Pokemon, PokemonGeneration, GENERATION_RANGES } from '@/lib/types';
+import { shuffleArray } from '@/lib/utils';
 
 const POKEAPI_BASE = 'https://pokeapi.co/api/v2';
 const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours
@@ -85,7 +86,7 @@ class PokemonService {
    * Select random Pokemon from an array
    */
   private selectRandomPokemon(pokemon: Pokemon[], count: number): Pokemon[] {
-    const shuffled = [...pokemon].sort(() => Math.random() - 0.5);
+    const shuffled = shuffleArray(pokemon);
     return shuffled.slice(0, count);
   }
 

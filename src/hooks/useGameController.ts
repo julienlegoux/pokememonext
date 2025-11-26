@@ -4,6 +4,7 @@ import { useState, useCallback, useEffect, useRef } from 'react';
 import { GameState, GameConfig, Card, Player, DIFFICULTY_CONFIG, TurnResult } from '@/lib/types';
 import { pokemonService } from '@/services/pokemon.service';
 import { storageService } from '@/services/storage.service';
+import { shuffleArray, calculateScore, preloadImages } from '@/lib/utils';
 
 const TIMER_DURATION = 30; // seconds per turn
 const CARD_REVEAL_DURATION = 1000; // ms
@@ -51,7 +52,11 @@ export function useGameController() {
       });
 
       // Shuffle cards
-      const shuffled = cards.sort(() => Math.random() - 0.5);
+      const shuffled = shuffleArray(cards);
+
+      // Preload images to avoid loading delays during gameplay
+      const imageUrls = pokemon.map(p => p.spriteUrl);
+      await preloadImages(imageUrls);
 
       // Initialize state
       const newState: GameState = {
@@ -298,11 +303,6 @@ export function useGameController() {
   // =============================================================================
   // UTILITIES
   // =============================================================================
-
-  const calculateScore = (matches: number, totalFlips: number): number => {
-    if (totalFlips === 0) return 0;
-    return Math.round((matches / totalFlips) * 1000);
-  };
 
   const findWinners = (players: Player[]): Player[] => {
     const maxScore = Math.max(...players.map(p => p.score));

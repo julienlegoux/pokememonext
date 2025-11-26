@@ -11,6 +11,7 @@ import { GameBoard } from '@/components/GameBoard';
 import { ScoreDisplay } from '@/components/ScoreDisplay';
 import { TimerDisplay } from '@/components/TimerDisplay';
 import { Leaderboard } from '@/components/Leaderboard';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 
 import styles from './page.module.css';
 
@@ -122,59 +123,61 @@ export default function Home() {
       </header>
 
       <main className={styles.main}>
-        {phase === 'setup' && <PlayerSetup onComplete={handlePlayersConfigured} />}
+        <ErrorBoundary>
+          {phase === 'setup' && <PlayerSetup onComplete={handlePlayersConfigured} />}
 
-        {phase === 'difficulty' && (
-          <DifficultySelector onSelect={handleDifficultySelected} />
-        )}
+          {phase === 'difficulty' && (
+            <DifficultySelector onSelect={handleDifficultySelected} />
+          )}
 
-        {phase === 'playing' && gameState && (
-          <div className={styles.gameContainer}>
-            <div className={styles.gameHeader}>
-              <TimerDisplay timeRemaining={gameState.timeRemaining} />
-              <div className={styles.gameActions}>
-                <button onClick={handleNewGame} className={styles.btn}>
-                  🔄 NEW GAME
-                </button>
-                <button onClick={handleViewLeaderboard} className={styles.btn}>
-                  🏆 LEADERBOARD
-                </button>
+          {phase === 'playing' && gameState && (
+            <div className={styles.gameContainer}>
+              <div className={styles.gameHeader}>
+                <TimerDisplay timeRemaining={gameState.timeRemaining} />
+                <div className={styles.gameActions}>
+                  <button onClick={handleNewGame} className={styles.btn}>
+                    🔄 NEW GAME
+                  </button>
+                  <button onClick={handleViewLeaderboard} className={styles.btn}>
+                    🏆 LEADERBOARD
+                  </button>
+                </div>
               </div>
+
+              <div className={styles.gameContent}>
+                <div className={styles.boardContainer}>
+                  <GameBoard
+                    cards={gameState.cards}
+                    difficulty={gameState.config.difficulty}
+                    onCardFlip={handleCardFlip}
+                    disabled={gameState.isPaused || gameState.isGameOver}
+                  />
+                </div>
+
+                <div className={styles.sidebar}>
+                  <ScoreDisplay
+                    players={gameState.players}
+                    currentPlayerIndex={gameState.currentPlayerIndex}
+                  />
+                </div>
+              </div>
+
+              {isLoading && (
+                <div className={styles.loading}>
+                  <div className={styles.loadingText}>Loading Pokemon...</div>
+                </div>
+              )}
+
+              {error && (
+                <div className={styles.error}>
+                  <div className={styles.errorText}>Error: {error}</div>
+                </div>
+              )}
             </div>
+          )}
 
-            <div className={styles.gameContent}>
-              <div className={styles.boardContainer}>
-                <GameBoard
-                  cards={gameState.cards}
-                  difficulty={gameState.config.difficulty}
-                  onCardFlip={handleCardFlip}
-                  disabled={gameState.isPaused || gameState.isGameOver}
-                />
-              </div>
-
-              <div className={styles.sidebar}>
-                <ScoreDisplay
-                  players={gameState.players}
-                  currentPlayerIndex={gameState.currentPlayerIndex}
-                />
-              </div>
-            </div>
-
-            {isLoading && (
-              <div className={styles.loading}>
-                <div className={styles.loadingText}>Loading Pokemon...</div>
-              </div>
-            )}
-
-            {error && (
-              <div className={styles.error}>
-                <div className={styles.errorText}>Error: {error}</div>
-              </div>
-            )}
-          </div>
-        )}
-
-        {phase === 'leaderboard' && <Leaderboard onClose={handleCloseLeaderboard} />}
+          {phase === 'leaderboard' && <Leaderboard onClose={handleCloseLeaderboard} />}
+        </ErrorBoundary>
       </main>
 
       <footer className={styles.footer}>

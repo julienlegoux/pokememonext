@@ -1,5 +1,7 @@
 'use client';
 
+import { useState } from 'react';
+import Image from 'next/image';
 import { Card } from '@/lib/types';
 import styles from './PokemonCard.module.css';
 
@@ -10,6 +12,8 @@ interface PokemonCardProps {
 }
 
 export function PokemonCard({ card, onFlip, disabled }: PokemonCardProps) {
+  const [imageError, setImageError] = useState(false);
+
   const handleClick = () => {
     if (!disabled && !card.isFlipped && !card.isMatched) {
       onFlip(card.id);
@@ -30,7 +34,21 @@ export function PokemonCard({ card, onFlip, disabled }: PokemonCardProps) {
         <div className={styles.cardBack}>
           {(card.isFlipped || card.isMatched) && (
             <div className={styles.cardContent}>
-              <img src={card.image} alt={card.name} className={styles.pokemonImage} />
+              {!imageError ? (
+                <Image
+                  src={card.image}
+                  alt={card.name}
+                  className={styles.pokemonImage}
+                  width={96}
+                  height={96}
+                  loading="lazy"
+                  onError={() => setImageError(true)}
+                />
+              ) : (
+                <div className={styles.imagePlaceholder}>
+                  {card.name.charAt(0).toUpperCase()}
+                </div>
+              )}
               <div className={styles.pokemonName}>{card.name}</div>
             </div>
           )}

@@ -68,6 +68,20 @@
   max-height: 60%;
   image-rendering: pixelated;
   filter: contrast(1.1);
+  object-fit: contain;
+}
+
+.imagePlaceholder {
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--primary-color);
+  border-radius: 50%;
+  font-size: 2rem;
+  font-weight: bold;
+  color: var(--bg-color);
 }
 
 .pokemonName {

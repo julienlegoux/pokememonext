@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Player } from '@/lib/types';
 import { storageService } from '@/services/storage.service';
+import { Modal } from './Modal';
 import styles from './Modal.module.css';
 
 interface PlayerSetupProps {
@@ -41,51 +42,41 @@ export function PlayerSetup({ onComplete }: PlayerSetupProps) {
   };
 
   return (
-    <div className={styles.modal}>
-      <div className={styles.modalContent}>
-        <div className={styles.modalHeader}>
-          <h2>┌─ PLAYER SETUP ─┐</h2>
-        </div>
-
-        <form onSubmit={handleSubmit}>
-          <div className={styles.formGroup}>
-            <label>Number of Players:</label>
-            <div className={styles.buttonGroup}>
-              {[1, 2, 3, 4].map(count => (
-                <button
-                  key={count}
-                  type="button"
-                  className={`${styles.btn} ${playerCount === count ? styles.active : ''}`}
-                  onClick={() => handlePlayerCountChange(count)}
-                >
-                  {count}
-                </button>
-              ))}
-            </div>
+    <Modal title="PLAYER SETUP">
+      <form onSubmit={handleSubmit}>
+        <div className={styles.formGroup}>
+          <label>Number of Players:</label>
+          <div className={styles.buttonGroup}>
+            {[1, 2, 3, 4].map(count => (
+              <button
+                key={count}
+                type="button"
+                className={`${styles.btn} ${playerCount === count ? styles.active : ''}`}
+                onClick={() => handlePlayerCountChange(count)}
+              >
+                {count}
+              </button>
+            ))}
           </div>
-
-          {playerNames.map((name, index) => (
-            <div key={index} className={styles.formGroup}>
-              <label>Player {index + 1} Name:</label>
-              <input
-                type="text"
-                value={name}
-                onChange={e => handleNameChange(index, e.target.value)}
-                className={styles.input}
-                maxLength={20}
-              />
-            </div>
-          ))}
-
-          <button type="submit" className={`${styles.btn} ${styles.btnPrimary}`}>
-            ► START GAME
-          </button>
-        </form>
-
-        <div className={styles.modalFooter}>
-          <p>└──────────────┘</p>
         </div>
-      </div>
-    </div>
+
+        {playerNames.map((name, index) => (
+          <div key={index} className={styles.formGroup}>
+            <label>Player {index + 1} Name:</label>
+            <input
+              type="text"
+              value={name}
+              onChange={e => handleNameChange(index, e.target.value)}
+              className={styles.input}
+              maxLength={20}
+            />
+          </div>
+        ))}
+
+        <button type="submit" className={`${styles.btn} ${styles.btnPrimary}`}>
+          ► START GAME
+        </button>
+      </form>
+    </Modal>
   );
 }

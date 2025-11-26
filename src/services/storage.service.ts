@@ -1,4 +1,5 @@
 import { GameState, GameConfig, LeaderboardEntry, Difficulty } from '@/lib/types';
+import { sortByScoreDesc, generateUniqueId } from '@/lib/utils';
 
 const GAME_STATE_KEY = 'pokememo_game_state';
 const LEADERBOARD_KEY = 'pokememo_leaderboard';
@@ -82,7 +83,7 @@ class StorageService {
       const entries: LeaderboardEntry[] = JSON.parse(saved);
 
       // Sort by score (descending)
-      return entries.sort((a, b) => b.score - a.score);
+      return sortByScoreDesc(entries);
     } catch (error) {
       console.error('Error loading leaderboard:', error);
       return [];
@@ -108,7 +109,7 @@ class StorageService {
 
       const newEntry: LeaderboardEntry = {
         ...entry,
-        id: this.generateId(),
+        id: generateUniqueId(),
         timestamp: Date.now(),
       };
 
@@ -127,7 +128,7 @@ class StorageService {
 
       const trimmed: LeaderboardEntry[] = [];
       Object.values(byDifficulty).forEach(diffEntries => {
-        const sorted = diffEntries.sort((a, b) => b.score - a.score);
+        const sorted = sortByScoreDesc(diffEntries);
         trimmed.push(...sorted.slice(0, 100));
       });
 
@@ -158,20 +159,20 @@ class StorageService {
    * Get or create player ID
    */
   getPlayerId(): string {
-    if (!this.isBrowser()) return this.generateId();
+    if (!this.isBrowser()) return generateUniqueId();
 
     try {
       let playerId = localStorage.getItem(PLAYER_ID_KEY);
 
       if (!playerId) {
-        playerId = this.generateId();
+        playerId = generateUniqueId();
         localStorage.setItem(PLAYER_ID_KEY, playerId);
       }
 
       return playerId;
     } catch (error) {
       console.error('Error getting player ID:', error);
-      return this.generateId();
+      return generateUniqueId();
     }
   }
 
@@ -211,16 +212,6 @@ class StorageService {
     }
   }
 
-  // =============================================================================
-  // UTILITIES
-  // =============================================================================
-
-  /**
-   * Generate a unique ID
-   */
-  private generateId(): string {
-    return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-  }
 }
 
 export const storageService = new StorageService();
