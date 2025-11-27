@@ -14,6 +14,7 @@ export interface Card {
   image: string;
   isFlipped: boolean;
   isMatched: boolean;
+  isLoading?: boolean; // True when Pokemon data is still being fetched
 }
 
 export type PlayerList = Player[];

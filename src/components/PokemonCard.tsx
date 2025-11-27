@@ -13,9 +13,10 @@ interface PokemonCardProps {
 
 export function PokemonCard({ card, onFlip, disabled }: PokemonCardProps) {
   const [imageError, setImageError] = useState(false);
+  const [imageLoading, setImageLoading] = useState(true);
 
   const handleClick = () => {
-    if (!disabled && !card.isFlipped && !card.isMatched) {
+    if (!disabled && !card.isFlipped && !card.isMatched && !card.isLoading) {
       onFlip(card.id);
     }
   };
@@ -24,7 +25,7 @@ export function PokemonCard({ card, onFlip, disabled }: PokemonCardProps) {
     <div
       className={`${styles.card} ${card.isFlipped || card.isMatched ? styles.flipped : ''} ${
         card.isMatched ? styles.matched : ''
-      }`}
+      } ${card.isLoading ? styles.loading : ''}`}
       onClick={handleClick}
     >
       <div className={styles.cardInner}>
@@ -34,22 +35,36 @@ export function PokemonCard({ card, onFlip, disabled }: PokemonCardProps) {
         <div className={styles.cardBack}>
           {(card.isFlipped || card.isMatched) && (
             <div className={styles.cardContent}>
-              {!imageError ? (
-                <Image
-                  src={card.image}
-                  alt={card.name}
-                  className={styles.pokemonImage}
-                  width={96}
-                  height={96}
-                  loading="lazy"
-                  onError={() => setImageError(true)}
-                />
+              {card.isLoading ? (
+                <div className={styles.spinner}>
+                  <div className={styles.spinnerCircle}></div>
+                  <div className={styles.loadingText}>Loading...</div>
+                </div>
+              ) : !imageError ? (
+                <>
+                  {imageLoading && (
+                    <div className={styles.spinner}>
+                      <div className={styles.spinnerCircle}></div>
+                    </div>
+                  )}
+                  <Image
+                    src={card.image}
+                    alt={card.name}
+                    className={styles.pokemonImage}
+                    width={96}
+                    height={96}
+                    loading="lazy"
+                    onError={() => setImageError(true)}
+                    onLoad={() => setImageLoading(false)}
+                    style={{ opacity: imageLoading ? 0 : 1 }}
+                  />
+                </>
               ) : (
                 <div className={styles.imagePlaceholder}>
                   {card.name.charAt(0).toUpperCase()}
                 </div>
               )}
-              <div className={styles.pokemonName}>{card.name}</div>
+              {!card.isLoading && <div className={styles.pokemonName}>{card.name}</div>}
             </div>
           )}
         </div>

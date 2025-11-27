@@ -42,7 +42,7 @@ export default function Home() {
   };
 
   // Handle difficulty selection
-  const handleDifficultySelected = async (
+  const handleDifficultySelected = (
     difficulty: Difficulty,
     generation: PokemonGeneration
   ) => {
@@ -52,7 +52,10 @@ export default function Home() {
       theme: { generation },
     };
 
-    await initGame(config);
+    // Start game initialization in background (non-blocking)
+    initGame(config);
+
+    // Immediately transition to playing phase
     setPhase("playing");
   };
 

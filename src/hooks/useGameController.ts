@@ -4,7 +4,7 @@ import { useState, useCallback, useEffect, useRef } from 'react';
 import { GameState, GameConfig, Card, Player, DIFFICULTY_CONFIG, TurnResult } from '@/lib/types';
 import { pokemonService } from '@/services/pokemon.service';
 import { storageService } from '@/services/storage.service';
-import { shuffleArray, calculateScore, preloadImages } from '@/lib/utils';
+import { shuffleArray, calculateScore } from '@/lib/utils';
 
 const TIMER_DURATION = 30; // seconds per turn
 const CARD_REVEAL_DURATION = 1000; // ms
@@ -26,39 +26,31 @@ export function useGameController() {
     setError(null);
 
     try {
-      // Generate cards based on difficulty
+      // Generate placeholder cards based on difficulty
       const diffConfig = DIFFICULTY_CONFIG[config.difficulty];
-      const pokemon = await pokemonService.getRandomPokemon(
-        config.theme.generation,
-        diffConfig.uniquePokemon
-      );
-
-      // Create pairs of cards
-      const cards: Card[] = [];
+      const placeholderCards: Card[] = [];
       let cardId = 0;
 
-      pokemon.forEach(poke => {
+      // Create placeholder cards (we'll populate them with Pokemon data later)
+      for (let i = 0; i < diffConfig.uniquePokemon; i++) {
         // Create two cards for each Pokemon (a pair)
-        for (let i = 0; i < 2; i++) {
-          cards.push({
+        for (let j = 0; j < 2; j++) {
+          placeholderCards.push({
             id: cardId++,
-            pokemonId: poke.id,
-            name: poke.name,
-            image: poke.spriteUrl,
+            pokemonId: 0,
+            name: 'Loading...',
+            image: '',
             isFlipped: false,
             isMatched: false,
+            isLoading: true,
           });
         }
-      });
+      }
 
-      // Shuffle cards
-      const shuffled = shuffleArray(cards);
+      // Shuffle placeholder cards
+      const shuffled = shuffleArray(placeholderCards);
 
-      // Preload images to avoid loading delays during gameplay
-      const imageUrls = pokemon.map(p => p.spriteUrl);
-      await preloadImages(imageUrls);
-
-      // Initialize state
+      // Initialize state with loading cards
       const newState: GameState = {
         config,
         cards: shuffled,
@@ -85,6 +77,55 @@ export function useGameController() {
 
       // Start timer
       startTimer();
+
+      // Load Pokemon data in background (non-blocking)
+      pokemonService.getRandomPokemon(
+        config.theme.generation,
+        diffConfig.uniquePokemon
+      ).then(pokemon => {
+        // Update cards with actual Pokemon data
+        setGameState(prev => {
+          if (!prev) return prev;
+
+          // Create a map of card indices to Pokemon (each Pokemon gets 2 cards)
+          const updatedCards = [...prev.cards];
+          let pokeIndex = 0;
+
+          for (let i = 0; i < updatedCards.length; i += 2) {
+            if (pokeIndex < pokemon.length) {
+              const poke = pokemon[pokeIndex];
+              // Update both cards in the pair
+              updatedCards[i] = {
+                ...updatedCards[i],
+                pokemonId: poke.id,
+                name: poke.name,
+                image: poke.spriteUrl,
+                isLoading: false,
+              };
+              updatedCards[i + 1] = {
+                ...updatedCards[i + 1],
+                pokemonId: poke.id,
+                name: poke.name,
+                image: poke.spriteUrl,
+                isLoading: false,
+              };
+              pokeIndex++;
+            }
+          }
+
+          const updatedState = {
+            ...prev,
+            cards: updatedCards,
+          };
+
+          // Save updated state
+          storageService.saveGame({ config: prev.config, state: updatedState });
+
+          return updatedState;
+        });
+      }).catch(err => {
+        setError(err instanceof Error ? err.message : 'Failed to load Pokemon data');
+      });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to initialize game');
       setIsLoading(false);
@@ -158,7 +199,7 @@ export function useGameController() {
 
     const card = gameState.cards.find(c => c.id === cardId);
 
-    if (!card || card.isMatched || card.isFlipped || gameState.revealedCards.length >= 2) {
+    if (!card || card.isMatched || card.isFlipped || card.isLoading || gameState.revealedCards.length >= 2) {
       return TurnResult.INVALID;
     }
 
