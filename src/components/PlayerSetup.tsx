@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Player } from '@/lib/types';
 import { storageService } from '@/services/storage.service';
+import { getPlayerColor } from '@/lib/constants';
 import { Modal } from './Modal';
 import styles from './Modal.module.css';
 
@@ -34,6 +35,7 @@ export function PlayerSetup({ onComplete }: PlayerSetupProps) {
       name: name || `Player ${index + 1}`,
       score: 0,
       isActive: index === 0,
+      color: getPlayerColor(index),
       totalFlips: 0,
       matches: 0,
     }));
@@ -62,12 +64,15 @@ export function PlayerSetup({ onComplete }: PlayerSetupProps) {
 
         {playerNames.map((name, index) => (
           <div key={index} className={styles.formGroup}>
-            <label>Player {index + 1} Name:</label>
+            <label style={{ color: getPlayerColor(index) }}>
+              Player {index + 1} Name:
+            </label>
             <input
               type="text"
               value={name}
               onChange={e => handleNameChange(index, e.target.value)}
               className={styles.input}
+              style={{ borderColor: getPlayerColor(index) }}
               maxLength={20}
             />
           </div>

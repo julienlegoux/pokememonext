@@ -33,21 +33,19 @@
 }
 
 .player.active {
-  border-color: var(--primary-color);
   background: var(--active-bg);
-  box-shadow: 0 0 10px var(--primary-color);
 }
 
 .playerName {
   font-weight: bold;
-  color: var(--text-color);
   margin-bottom: 0.25rem;
+  text-shadow: 0 0 5px currentColor;
 }
 
 .playerScore {
   font-size: 1.5rem;
-  color: var(--primary-color);
   font-weight: bold;
+  text-shadow: 0 0 8px currentColor;
 }
 
 .playerStats {

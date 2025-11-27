@@ -3,6 +3,7 @@ export interface Player {
   name: string;
   score: number;
   isActive: boolean;
+  color: string;
   totalFlips?: number;
   matches?: number;
 }

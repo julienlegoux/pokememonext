@@ -17,12 +17,24 @@ export function ScoreDisplay({ players, currentPlayerIndex }: ScoreDisplayProps)
           <div
             key={player.id}
             className={`${styles.player} ${index === currentPlayerIndex ? styles.active : ''}`}
+            style={{
+              borderColor: index === currentPlayerIndex ? player.color : undefined,
+              boxShadow: index === currentPlayerIndex ? `0 0 10px ${player.color}` : undefined,
+            }}
           >
-            <div className={styles.playerName}>
+            <div
+              className={styles.playerName}
+              style={{ color: player.color }}
+            >
               {index === currentPlayerIndex ? '► ' : '  '}
               {player.name}
             </div>
-            <div className={styles.playerScore}>{player.score}</div>
+            <div
+              className={styles.playerScore}
+              style={{ color: player.color }}
+            >
+              {player.score}
+            </div>
             <div className={styles.playerStats}>
               Matches: {player.matches || 0} | Flips: {player.totalFlips || 0}
             </div>
