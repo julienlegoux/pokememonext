@@ -15,7 +15,7 @@ export function PokemonCard({ card, onFlip, disabled }: PokemonCardProps) {
   const [imageError, setImageError] = useState(false);
 
   const handleClick = () => {
-    if (!disabled && !card.isFlipped && !card.isMatched) {
+    if (!disabled && !card.isFlipped && !card.isMatched && !card.isLoading) {
       onFlip(card.id);
     }
   };
@@ -32,7 +32,7 @@ export function PokemonCard({ card, onFlip, disabled }: PokemonCardProps) {
           <div className={styles.cardBack}>?</div>
         </div>
         <div className={styles.cardBack}>
-          {(card.isFlipped || card.isMatched) && (
+          {(card.isFlipped || card.isMatched) && !card.isLoading && (
             <div className={styles.cardContent}>
               {!imageError ? (
                 <Image

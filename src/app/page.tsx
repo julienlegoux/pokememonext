@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { GameConfig, Player, Difficulty, PokemonGeneration } from "@/lib/types";
 import { useGameController } from "@/hooks/useGameController";
 import { storageService } from "@/services/storage.service";
@@ -33,6 +33,8 @@ export default function Home() {
   const [phase, setPhase] = useState<GamePhase>("setup");
   const [players, setPlayers] = useState<Player[]>([]);
   const [darkMode, setDarkMode] = useState(false);
+  const [showReady, setShowReady] = useState(false);
+  const readyShownRef = useRef(false);
 
   const { gameState, isLoading, error, initGame, flipCard, resetGame } =
     useGameController();
@@ -76,7 +78,7 @@ export default function Home() {
   };
 
   // Handle difficulty selection
-  const handleDifficultySelected = async (
+  const handleDifficultySelected = (
     difficulty: Difficulty,
     generation: PokemonGeneration
   ) => {
@@ -86,8 +88,27 @@ export default function Home() {
       theme: { generation },
     };
 
-    await initGame(config);
+    // Reset ready modal flag for new game
+    readyShownRef.current = false;
+
+    // Start game initialization in background (non-blocking)
+    initGame(config);
+
+    // Immediately transition to playing phase
     setPhase("playing");
+  };
+
+  // Watch for loading completion to show "Ready!" message
+  useEffect(() => {
+    if (phase === "playing" && !isLoading && gameState && !readyShownRef.current) {
+      setShowReady(true);
+      readyShownRef.current = true;
+    }
+  }, [isLoading, gameState, phase]);
+
+  // Handle closing Ready modal
+  const handleCloseReady = () => {
+    setShowReady(false);
   };
 
   // Handle new game
@@ -95,6 +116,7 @@ export default function Home() {
     if (confirm("Start a new game? Current progress will be lost.")) {
       resetGame();
       setPhase("setup");
+      readyShownRef.current = false; // Reset for next game
     }
   };
 
@@ -225,10 +247,22 @@ export default function Home() {
             <Leaderboard onClose={handleCloseLeaderboard} />
           )}
 
-          {isLoading && (
+          {phase === "playing" && isLoading && (
             <div className={styles.loading}>
-              <div className={styles.loadingText}>Loading Pokemon...</div>
+              <div className={styles.loadingText}>Initializing...</div>
             </div>
+          )}
+
+          {phase === "playing" && showReady && !isLoading && (
+            <>
+              <div className={styles.modalBackdrop} onClick={handleCloseReady}></div>
+              <div className={styles.readyModal} onClick={(e) => e.stopPropagation()}>
+                <div className={styles.readyText}>Ready!</div>
+                <button onClick={handleCloseReady} className={styles.playBtn}>
+                  ► PLAY
+                </button>
+              </div>
+            </>
           )}
 
           {error && (
