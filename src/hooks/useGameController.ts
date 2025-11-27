@@ -72,6 +72,7 @@ export function useGameController() {
         currentPlayerIndex: 0,
         revealedCards: [],
         timeRemaining: TIMER_DURATION,
+        totalPlaytime: 0, // Track total elapsed time for all game types
         isPaused: false,
         isGameOver: false,
         winner: null,
@@ -104,17 +105,35 @@ export function useGameController() {
       setGameState(prev => {
         if (!prev || prev.isPaused || prev.isGameOver) return prev;
 
+        const isSoloPlayer = prev.players.length === 1;
+
+        // Always increment total playtime
+        const newTotalPlaytime = prev.totalPlaytime + 1;
+
+        // For solo players, just count up totalPlaytime (no countdown)
+        if (isSoloPlayer) {
+          return {
+            ...prev,
+            totalPlaytime: newTotalPlaytime,
+          };
+        }
+
+        // For multiplayer, handle countdown timer
         const newTime = prev.timeRemaining - 1;
 
         if (newTime <= 0) {
           // Time expired, switch turn
           handleTimerExpired();
-          return prev;
+          return {
+            ...prev,
+            totalPlaytime: newTotalPlaytime,
+          };
         }
 
         return {
           ...prev,
           timeRemaining: newTime,
+          totalPlaytime: newTotalPlaytime,
         };
       });
     }, 1000);
@@ -246,6 +265,7 @@ export function useGameController() {
               difficulty: prev.config.difficulty,
               totalFlips: player.totalFlips || 0,
               matches: player.matches || 0,
+              totalPlaytime: prev.totalPlaytime,
             });
           });
 

@@ -183,7 +183,11 @@ export default function Home() {
           {phase === "playing" && gameState && (
             <div className={styles.gameContainer}>
               <div className={styles.gameHeader}>
-                <TimerDisplay timeRemaining={gameState.timeRemaining} />
+                <TimerDisplay
+                  timeRemaining={gameState.timeRemaining}
+                  totalPlaytime={gameState.totalPlaytime}
+                  isSoloPlayer={gameState.players.length === 1}
+                />
                 <div className={styles.gameActions}>
                   <button onClick={handleNewGame} className={styles.btn}>
                     🔄 NEW GAME
