@@ -32,6 +32,7 @@ export interface LeaderboardEntry {
   timestamp: number;
   totalFlips: number;
   matches: number;
+  totalPlaytime?: number; // Total game duration in seconds
 }
 
 // Pokemon types
@@ -68,6 +69,7 @@ export interface GameState {
   currentPlayerIndex: number;
   revealedCards: Card[];
   timeRemaining: number;
+  totalPlaytime: number; // Total elapsed time in seconds (for all game types)
   isPaused: boolean;
   isGameOver: boolean;
   winner: Player | Player[] | null;
