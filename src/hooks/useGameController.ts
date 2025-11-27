@@ -70,7 +70,6 @@ export function useGameController() {
       };
 
       setGameState(newState);
-      setIsLoading(false);
 
       // Save initial state
       storageService.saveGame({ config, state: newState });
@@ -123,8 +122,12 @@ export function useGameController() {
 
           return updatedState;
         });
+
+        // Data loaded, hide loading state
+        setIsLoading(false);
       }).catch(err => {
         setError(err instanceof Error ? err.message : 'Failed to load Pokemon data');
+        setIsLoading(false);
       });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to initialize game');

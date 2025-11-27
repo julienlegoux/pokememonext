@@ -21,6 +21,7 @@ export default function Home() {
   const [phase, setPhase] = useState<GamePhase>("setup");
   const [players, setPlayers] = useState<Player[]>([]);
   const [darkMode, setDarkMode] = useState(false);
+  const [showReady, setShowReady] = useState(false);
 
   const { gameState, isLoading, error, initGame, flipCard, resetGame } =
     useGameController();
@@ -58,6 +59,17 @@ export default function Home() {
     // Immediately transition to playing phase
     setPhase("playing");
   };
+
+  // Watch for loading completion to show "Ready!" message
+  useEffect(() => {
+    if (phase === "playing" && !isLoading && gameState && !showReady) {
+      setShowReady(true);
+      const timer = setTimeout(() => {
+        setShowReady(false);
+      }, 1000); // Show "Ready!" for 1 second
+      return () => clearTimeout(timer);
+    }
+  }, [isLoading, gameState, phase, showReady]);
 
   // Handle new game
   const handleNewGame = () => {
@@ -190,9 +202,15 @@ export default function Home() {
             <Leaderboard onClose={handleCloseLeaderboard} />
           )}
 
-          {isLoading && (
+          {phase === "playing" && isLoading && (
             <div className={styles.loading}>
-              <div className={styles.loadingText}>Loading Pokemon...</div>
+              <div className={styles.loadingText}>Initializing...</div>
+            </div>
+          )}
+
+          {phase === "playing" && showReady && !isLoading && (
+            <div className={styles.loading}>
+              <div className={styles.readyText}>Ready!</div>
             </div>
           )}
 
