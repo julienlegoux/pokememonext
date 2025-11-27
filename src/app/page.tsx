@@ -64,12 +64,13 @@ export default function Home() {
   useEffect(() => {
     if (phase === "playing" && !isLoading && gameState && !showReady) {
       setShowReady(true);
-      const timer = setTimeout(() => {
-        setShowReady(false);
-      }, 1000); // Show "Ready!" for 1 second
-      return () => clearTimeout(timer);
     }
   }, [isLoading, gameState, phase, showReady]);
+
+  // Handle closing Ready modal
+  const handleCloseReady = () => {
+    setShowReady(false);
+  };
 
   // Handle new game
   const handleNewGame = () => {
@@ -209,9 +210,15 @@ export default function Home() {
           )}
 
           {phase === "playing" && showReady && !isLoading && (
-            <div className={styles.loading}>
-              <div className={styles.readyText}>Ready!</div>
-            </div>
+            <>
+              <div className={styles.modalBackdrop} onClick={handleCloseReady}></div>
+              <div className={styles.readyModal}>
+                <div className={styles.readyText}>Ready!</div>
+                <button onClick={handleCloseReady} className={styles.playBtn}>
+                  ► PLAY
+                </button>
+              </div>
+            </>
           )}
 
           {error && (

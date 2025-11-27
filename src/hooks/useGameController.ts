@@ -86,31 +86,24 @@ export function useGameController() {
         setGameState(prev => {
           if (!prev) return prev;
 
-          // Create a map of card indices to Pokemon (each Pokemon gets 2 cards)
-          const updatedCards = [...prev.cards];
-          let pokeIndex = 0;
+          // Create pairs of Pokemon (each Pokemon appears twice)
+          const pokemonPairs: typeof pokemon = [];
+          pokemon.forEach(poke => {
+            pokemonPairs.push(poke);
+            pokemonPairs.push(poke);
+          });
 
-          for (let i = 0; i < updatedCards.length; i += 2) {
-            if (pokeIndex < pokemon.length) {
-              const poke = pokemon[pokeIndex];
-              // Update both cards in the pair
-              updatedCards[i] = {
-                ...updatedCards[i],
-                pokemonId: poke.id,
-                name: poke.name,
-                image: poke.spriteUrl,
-                isLoading: false,
-              };
-              updatedCards[i + 1] = {
-                ...updatedCards[i + 1],
-                pokemonId: poke.id,
-                name: poke.name,
-                image: poke.spriteUrl,
-                isLoading: false,
-              };
-              pokeIndex++;
-            }
-          }
+          // Shuffle the Pokemon pairs to match the shuffled card positions
+          const shuffledPokemon = shuffleArray(pokemonPairs);
+
+          // Map shuffled Pokemon to shuffled card positions (one-to-one)
+          const updatedCards = prev.cards.map((card, index) => ({
+            ...card,
+            pokemonId: shuffledPokemon[index].id,
+            name: shuffledPokemon[index].name,
+            image: shuffledPokemon[index].spriteUrl,
+            isLoading: false,
+          }));
 
           const updatedState = {
             ...prev,
