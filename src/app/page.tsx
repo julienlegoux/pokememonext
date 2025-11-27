@@ -17,6 +17,18 @@ import styles from "./page.module.css";
 
 type GamePhase = "setup" | "difficulty" | "playing" | "leaderboard";
 
+// Helper function to convert hex to RGB
+function hexToRgb(hex: string): { r: number; g: number; b: number } | null {
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return result
+    ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16),
+      }
+    : null;
+}
+
 export default function Home() {
   const [phase, setPhase] = useState<GamePhase>("setup");
   const [players, setPlayers] = useState<Player[]>([]);
@@ -34,6 +46,28 @@ export default function Home() {
       isDark ? "dark" : "light"
     );
   }, []);
+
+  // Update UI colors based on current player
+  useEffect(() => {
+    if (gameState && gameState.players[gameState.currentPlayerIndex]) {
+      const currentPlayer = gameState.players[gameState.currentPlayerIndex];
+      const playerColor = currentPlayer.color;
+
+      // Update CSS custom properties for the current player's color
+      document.documentElement.style.setProperty("--primary-color", playerColor);
+      document.documentElement.style.setProperty("--border-color", playerColor);
+      document.documentElement.style.setProperty("--success-color", playerColor);
+
+      // Update active background with a tinted version of the player color
+      const activeRgb = hexToRgb(playerColor);
+      if (activeRgb) {
+        const activeBg = darkMode
+          ? `rgba(${activeRgb.r}, ${activeRgb.g}, ${activeRgb.b}, 0.1)`
+          : `rgba(${activeRgb.r}, ${activeRgb.g}, ${activeRgb.b}, 0.15)`;
+        document.documentElement.style.setProperty("--active-bg", activeBg);
+      }
+    }
+  }, [gameState?.currentPlayerIndex, gameState?.players, darkMode]);
 
   // Handle player setup completion
   const handlePlayersConfigured = (configuredPlayers: Player[]) => {
