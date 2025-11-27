@@ -124,6 +124,7 @@
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   z-index: 998;
+  cursor: pointer;
 }
 
 .readyModal {
@@ -135,12 +136,13 @@
   border: 3px double var(--success-color);
   padding: 3rem 4rem;
   text-align: center;
-  z-index: 999;
+  z-index: 1000;
   box-shadow: 0 0 40px rgba(0, 255, 0, 0.5);
   display: flex;
   flex-direction: column;
   gap: 2rem;
   align-items: center;
+  pointer-events: auto;
 }
 
 .readyText {
